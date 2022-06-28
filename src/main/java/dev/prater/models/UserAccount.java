@@ -10,8 +10,8 @@ public class UserAccount {
 	String pers_name;
 	String fam_name;
 	
-	UserAccount(){;}
-	UserAccount(int uID, boolean iFM, String username, String passkey, String pers_name, String fam_name)
+	public UserAccount(){;}
+	public UserAccount(int uID, boolean iFM, String username, String passkey, String pers_name, String fam_name)
 	{this.uID=uID; this.isFinancialManager=iFM; this.username = username; this.passkey = passkey; this.pers_name = pers_name; this.fam_name = fam_name;}
 	
 	public int getuID() {return uID;}
