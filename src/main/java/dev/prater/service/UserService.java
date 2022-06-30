@@ -55,9 +55,20 @@ public class UserService {
 		
 		return uA;
 	}
+	
+	public UserAccount getUserAccount(String uName) throws Exception {
+		UserAccount uA = uDAO.getUserAccount(uName);
+		
+		if (uA == null) {
+			throw new Exception("User not found");
+		}
+		
+		return uA;
+	}
 
 	public boolean updateUserAccount(UserAccount uChanged) {
 		boolean victory = false;
+		if (uDAO.getUserAccount(uChanged.getuID()).isFinancialManager()==false) {uChanged.setFinancialManager(false);}		
 		UserAccount uBack = uDAO.updateUserAccount(uChanged);
 		if (uBack.getuID() == uChanged.getuID()) {victory = true;}
 		return victory;
@@ -65,5 +76,3 @@ public class UserService {
 
 	public boolean deleteUserAccount(int id) {return uDAO.deleteUserAccount(id);}
 }
-
-//in update, make sure that they're not trying to change manager status

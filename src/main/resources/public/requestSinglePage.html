@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Request Form</title>
+    </head>
+
+    <body>
+        <a href="requestListPage.html"><u>&lt;= Your Requests</u></a><br>
+        <b>Note_1:</b> When a request is loaded via the Focus button, it is saved in browser. 
+        Refreshing will keep your data, but not any changes made to it. When loaded, the request form contains a save button. <br>
+        <b>Note_2:</b> Using the Save or Submit buttons will make the form disappear. Both of these save the form, allowing the Load button 
+        to return you to your previous work state. <br>
+        <button onclick="triggerPopulate()">(Re)Load Request Form</button>
+        <button onclick="clearSavedRequest()">Clear Saved Request</button>
+        <div id="requestGoesHere">
+
+        </div>
+        <script src="reimbursement_JS.js"></script>
+    </body>
+</html>

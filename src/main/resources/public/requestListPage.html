@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Your Requests</title>
+    </head>
+
+    <body onload="hideMReqs()">
+        <a href="homePage.html"><u>&lt;= Home</u></a><br>
+        <button type="button" onclick="logSession()">DEBUG SESSION ID</button>
+        <div id="uReqHeader">
+            <h5>Your Requests</h5>
+            <button type="button" id="uReqHB" onclick="getRequestsUser()">(Re)Load List</button>
+        </div>
+        <div id="uReqList">
+
+        </div>
+        
+        <div title="mReqHeader" id="mReqH" style="display:inline">
+            <h5>Requests To Review</h5>
+            <button type="button" id="mReqHB" onclick="getRequestsManager()">(Re)Load List</button>
+        </div>
+        <div id="mReqList">
+
+        </div>
+        <script src="reimbursement_JS.js"></script>
+    </body>
+</html>

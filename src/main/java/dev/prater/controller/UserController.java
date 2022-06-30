@@ -13,11 +13,33 @@ public class UserController {
 	
 	public static void attemptLogin(Context ctx)
 	{
-		String test = ctx.body();
 		UserAccount visitor = ctx.bodyAsClass(UserAccount.class);
-//		uS.login(visitor.getUsername(), visitor.getPasskey());
 		UserAccount friend = uS.login(visitor.getUsername(), visitor.getPasskey());
-		if (friend != null) {ctx.status(200); ctx.json(friend);}
-		else {ctx.status(404); ctx.result("Login failed, double-check username and password.");}
+		if (friend != null) 
+		{
+			ctx.status(200); 
+			ctx.json(friend);
+			ctx.sessionAttribute("loginAs", friend.getUsername());
+			ctx.sessionAttribute("isManager",friend.isFinancialManager());
+		}
+		else 
+		{
+			ctx.status(404); 
+			ctx.json("{failureState: userNotFound}");
+		}
+	}
+	
+	public static void attemptLogout(Context ctx) {ctx.status(200);	ctx.req.getSession().invalidate();}
+	
+	public static void getUser(Context ctx) 
+	{
+		try {
+			UserAccount friend = uS.getUserAccount(Integer.parseInt(ctx.pathParam("{id0}")));
+			ctx.json(friend);
+			ctx.status(200);
+		} catch (Exception e) {
+			e.printStackTrace();
+			ctx.status(404);
+		}
 	}
 }
