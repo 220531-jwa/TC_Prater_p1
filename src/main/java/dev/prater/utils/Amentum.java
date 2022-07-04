@@ -37,6 +37,7 @@ public class Amentum {
 						path("/{id1}", () -> {
 							get(ReimbursementController::getOneRequest);
 							post(ReimbursementController::createRequest);
+							put(ReimbursementController::updateRequest);
 						});
 					});
 				});
@@ -45,7 +46,10 @@ public class Amentum {
 				get((ctx) -> ctx.result("MANAGERS PAGE WIP"));
 				path ("/{id0}", () -> {
 					path("/requests", () -> {
-						//get()
+						get(ReimbursementController::getUsersRequests);
+						path("/{id1}", () -> {
+							put(ReimbursementController::updateRequest);
+						});
 					});
 				});
 			});

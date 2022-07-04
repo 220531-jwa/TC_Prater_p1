@@ -13,8 +13,9 @@
         Refreshing will keep your data, but not any changes made to it. When loaded, the request form contains a save button. <br>
         <b>Note_2:</b> Using the Save or Submit buttons will make the form disappear. Both of these save the form, allowing the Load button 
         to return you to your previous work state. <br>
-        <button onclick="triggerPopulate()">(Re)Load Request Form</button>
-        <button onclick="clearSavedRequest()">Clear Saved Request</button>
+        <button onclick="triggerPopulate()" type="button">(Re)Load Request Form</button>
+        <button onclick="clearSavedRequest()" type="button">Clear Saved Request</button>
+        <input type="number" id="sReqID"><button onclick="getSingleRequest(document.getElementById('sReqID').value)">Request by ID </button>
         <div id="requestGoesHere">
 
         </div>

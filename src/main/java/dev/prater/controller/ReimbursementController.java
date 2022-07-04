@@ -5,7 +5,6 @@ import dev.prater.repository.ReimbursementDAO;
 import dev.prater.models.ReimbursementRequest;
 
 import java.util.List;
-import java.util.ArrayList;
 import io.javalin.http.Context;
 
 public class ReimbursementController {
@@ -18,6 +17,9 @@ public class ReimbursementController {
 		ReimbursementRequest incoming = ctx.bodyAsClass(ReimbursementRequest.class);
 		int uID = Integer.parseInt(ctx.pathParam("{id0}"));
 		incoming = rS.createRequest(uID, incoming);
+		if (incoming==null) {ctx.status(404);} else {ctx.status(201);}
+		ctx.json(incoming);
+		
 	}
 	
 	public static void getOneRequest(Context ctx) 
@@ -32,12 +34,22 @@ public class ReimbursementController {
 		String listType = "";
 		int id0 = Integer.parseInt(ctx.pathParam("{id0}"));
 		List<ReimbursementRequest> rRL = null;
-		if (ctx.path().contains("requests") && !ctx.path().contains("users") && !ctx.path().contains("managers")) {listType="all";}
+		if (id0 == 0) {listType="all";}
 		else if (ctx.path().contains("users")) {listType="uID";}
 		else if (ctx.path().contains("managers")) {listType="fID";}
 		rRL = rS.getMultipleRequests(id0, listType);
 //		rRL = rDAO.getAllRequests();
 		if (rRL==null) {ctx.status(404);} else {ctx.status(200);}
 		ctx.json(rRL);
+	}
+
+	
+	public static void updateRequest(Context ctx)
+	{
+		ReimbursementRequest updatedReq = ctx.bodyAsClass(ReimbursementRequest.class);
+		int rID = Integer.parseInt(ctx.pathParam("{id1}"));
+		updatedReq = rS.updateRequest(rID, updatedReq);
+		if (updatedReq==null) {ctx.status(404);} else {ctx.status(200);}
+		ctx.json(updatedReq);
 	}
 }

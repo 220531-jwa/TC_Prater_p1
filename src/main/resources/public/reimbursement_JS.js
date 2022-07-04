@@ -76,8 +76,16 @@ async function loadUser()
 //Request Functions
 function hideMReqs()
 {
-    if (sessionStorage.getItem("isManager") == "false") {document.getElementById('mReqH').setAttribute('style','display:none');}
-    else if (sessionStorage.getItem("isManager") == "true") {document.getElementById('mReqH').setAttribute('style','display:inline');}
+    if (sessionStorage.getItem("isManager") == "false") 
+    {
+        document.getElementById('mReqH').setAttribute('style','display:none');
+        document.getElementById('aReqH').setAttribute('style','display:none');
+    }
+    else if (sessionStorage.getItem("isManager") == "true") 
+    {
+        document.getElementById('mReqH').setAttribute('style','display:inline');
+        document.getElementById('aReqH').setAttribute('style','display:inline');
+    }
 }
 
 function requestIntoDiv(inputJson, outputDiv)
@@ -138,9 +146,15 @@ function requestIntoJson()
     reqJSON.event_Type = document.getElementById('eType').value;
     reqJSON.justification = document.getElementById('justification').value;
     reqJSON.financeComment = document.getElementById('fCom').value;
-    reqJSON.eventDate = document.getElementById('eDate').valueAsDate;
-    reqJSON.openDate = document.getElementById('oDate').valueAsDate;
-    reqJSON.closeDate = document.getElementById('cDate').valueAsDate;
+    // reqJSON.eventDate = document.getElementById('eDate').valueAsDate;
+    // reqJSON.openDate = document.getElementById('oDate').valueAsDate;
+    // reqJSON.closeDate = document.getElementById('cDate').valueAsDate;
+    reqJSON.eventDate = document.getElementById('eDate').value;
+    reqJSON.openDate = document.getElementById('oDate').value;
+    console.log(reqJSON.openDate);
+    if (!reqJSON.openDate[0]==1 && !reqJSON.openDate[0]==2) {reqJSON.openDate="";}
+    reqJSON.closeDate = document.getElementById('cDate').value;
+    if (reqJSON.closeDate.includes(":")==false || reqJSON.closeDate==undefined) {reqJSON.closeDate="";}
     return JSON.stringify(reqJSON);
 }
 
@@ -148,10 +162,51 @@ function saveRequestForm() {sessionStorage.setItem('singleRequest', requestIntoJ
 
 function clearSavedRequest() {sessionStorage.setItem('singleRequest', null);}
 
+function padDateNumbers(obj)
+{
+    console.log(obj);
+    if (obj!=null)
+    {
+        if (!obj.includes(":"))
+        {
+            for (let i = 1;i<6;i++)
+            {
+                if (obj[i]<10) {obj[i] = `0${obj[i]}`;}
+            }
+        }
+    }
+    return obj;
+}
+
+function chromeDateConversion(reqInput) 
+{
+    reqInput.eventDate = padDateNumbers(reqInput.eventDate);
+    reqInput.openDate = padDateNumbers(reqInput.openDate);
+    reqInput.closeDate = padDateNumbers(reqInput.closeDate);
+    if (!reqInput.eventDate.includes(":"))
+    {
+        reqInput.eventDate = `${reqInput.eventDate[0]}-${reqInput.eventDate[1]}-${reqInput.eventDate[2]}T${reqInput.eventDate[3]}:${reqInput.eventDate[4]}`;
+    }
+    if (reqInput.openDate!=null && !reqInput.openDate.includes(":"))
+    {
+        reqInput.openDate = `${reqInput.openDate[0]}-${reqInput.openDate[1]}-${reqInput.openDate[2]}T${reqInput.openDate[3]}:${reqInput.openDate[4]}`;
+    }
+    if (reqInput.closeDate!=null && !reqInput.closeDate.includes(":"))
+    {
+        reqInput.closeDate = `${reqInput.closeDate[0]}-${reqInput.closeDate[1]}-${reqInput.closeDate[2]}T${reqInput.closeDate[3]}:${reqInput.closeDate[4]}`;
+    }
+    return reqInput;
+}
+
 function triggerPopulate() 
 {
     let tempRequest = JSON.parse(sessionStorage.getItem('singleRequest'));
     if (tempRequest==null) {tempRequest = getBlankRequest();}
+
+    { //preferably don't run this in firefox as it's not needed, trying to figure out how to detect specific browsers is taking too long
+        tempRequest = chromeDateConversion(tempRequest);
+        console.log("Attempted conversion");
+    }
 
     let reqDiv = populateRequestForm(tempRequest,document.createElement('form'));
     document.getElementById('requestGoesHere').innerHTML = "";
@@ -165,35 +220,39 @@ function triggerPopulate()
     document.getElementById('pType').selectedIndex = (tempRequest).proofType;
     document.getElementById('eType').selectedIndex = (tempRequest).event_Type;
 
+    
+
     if (tempRequest.eventDate==null) {;}
     else if (tempRequest.eventDate.length==7) //datetime objects are read as arrays
     {
-        let tempDate = new Date();
-        console.log(tempDate.getTimezoneOffset());
-        tempDate.setFullYear(tempRequest.eventDate[0]); tempDate.setMonth(tempRequest.eventDate[1]-1); tempDate.setDate(tempRequest.eventDate[2]);
-        tempDate.setHours(tempRequest.eventDate[3], tempRequest.eventDate[4], 0, 0);
-        document.getElementById('eDate').valueAsDate = tempDate;
-        tempDate.setFullYear(tempRequest.openDate[0]); tempDate.setMonth(tempRequest.openDate[1]-1); tempDate.setDate(tempRequest.openDate[2]);
-        tempDate.setHours(tempRequest.openDate[3], tempRequest.openDate[4], 0, 0);
-        document.getElementById('oDate').valueAsDate = tempDate;
-        tempDate.setFullYear(tempRequest.closeDate[0]); tempDate.setMonth(tempRequest.closeDate[1]-1); tempDate.setDate(tempRequest.closeDate[2]);
-        tempDate.setHours(tempRequest.closeDate[3], tempRequest.closeDate[4], 0, 0);
-        document.getElementById('cDate').valueAsDate = tempDate;
+        // let tempDate = new Date(); //worked for firefox, not for Chrome
+        // tempDate.setFullYear(tempRequest.eventDate[0]); tempDate.setMonth(tempRequest.eventDate[1]-1); tempDate.setDate(tempRequest.eventDate[2]);
+        // tempDate.setHours(tempRequest.eventDate[3], tempRequest.eventDate[4], 0, 0);
+        // document.getElementById('eDate').valueAsDate = tempDate;
+        // tempDate.setFullYear(tempRequest.openDate[0]); tempDate.setMonth(tempRequest.openDate[1]-1); tempDate.setDate(tempRequest.openDate[2]);
+        // tempDate.setHours(tempRequest.openDate[3], tempRequest.openDate[4], 0, 0);
+        // document.getElementById('oDate').valueAsDate = tempDate;
+        // tempDate.setFullYear(tempRequest.closeDate[0]); tempDate.setMonth(tempRequest.closeDate[1]-1); tempDate.setDate(tempRequest.closeDate[2]);
+        // tempDate.setHours(tempRequest.closeDate[3], tempRequest.closeDate[4], 0, 0);
+        // document.getElementById('cDate').valueAsDate = tempDate;
         let clockSlow = document.createElement('div');
-        clockSlow.innerHTML = `Timezone Offset (Minutes): ${tempDate.getTimezoneOffset()}`;
+        // clockSlow.innerHTML = `Timezone Offset (Minutes): ${tempDate.getTimezoneOffset()}`;
         document.getElementById('requestGoesHere').appendChild(clockSlow);
     }
     else if (tempRequest.eventDate.length>7) //datetime strings are longer than 7
     {
-        let tempDate = new Date()
+        // let tempDate = new Date()
         let clockSlow = document.createElement('div');
-        clockSlow.innerHTML = `Timezone Offset (Minutes): ${tempDate.getTimezoneOffset()}`;
-        tempDate.setTime(Date.parse(tempRequest.eventDate));
-        document.getElementById('eDate').valueAsDate = tempDate;
-        tempDate.setTime(Date.parse(tempRequest.openDate));
-        document.getElementById('oDate').valueAsDate = tempDate;
-        tempDate.setTime(Date.parse(tempRequest.closeDate));
-        document.getElementById('cDate').valueAsDate = tempDate;
+        // clockSlow.innerHTML = `Timezone Offset (Minutes): ${tempDate.getTimezoneOffset()}`;
+        // tempDate.setTime(Date.parse(tempRequest.eventDate));
+        // document.getElementById('eDate').valueAsDate = tempDate;
+        // tempDate.setTime(Date.parse(tempRequest.openDate));
+        // document.getElementById('oDate').valueAsDate = tempDate;
+        // tempDate.setTime(Date.parse(tempRequest.closeDate));
+        // document.getElementById('cDate').valueAsDate = tempDate;
+        // document.getElementById('eDate').valueAsDate=tempRequest.eventDate;
+        // document.getElementById('oDate').valueAsDate=tempRequest.openDate;
+        // document.getElementById('cDate').valueAsDate=tempRequest.closeDate;
         document.getElementById('requestGoesHere').appendChild(clockSlow);
     }
 }
@@ -201,9 +260,9 @@ function triggerPopulate()
 function populateRequestForm(inputJson, outputDiv)
 {
     console.log(inputJson);
-    outputDiv.innerHTML += `<label>RequestID: <input type="text" id="rID" value="${inputJson.requestID}"></label><br>`;
-    outputDiv.innerHTML += `<label>UserID: <input type="text" id="uID" value="${inputJson.userID}"></label><br>`;
-    outputDiv.innerHTML += `<label>FinanceID: <input type="text" id="fID" value="${inputJson.financeID}"></label><br>`;
+    outputDiv.innerHTML += `<label>RequestID: <input type="number" step="1" min="0" id="rID" value="${inputJson.requestID}"></label><br>`;
+    outputDiv.innerHTML += `<label>UserID: <input type="number" step="1" min="0" id="uID" value="${inputJson.userID}"></label><br>`;
+    outputDiv.innerHTML += `<label>FinanceID: <input type="number" step="1" min="0" id="fID" value="${inputJson.financeID}"></label><br>`;
     outputDiv.innerHTML += `<label for="sCode">Status Code: </label> 
                                 <select name="sCode" id="sCode" value="${inputJson.statusCode}">
                                     <option value="0">Unsent</option>
@@ -215,10 +274,10 @@ function populateRequestForm(inputJson, outputDiv)
                                     <option value="6">Withdrawn</option>
                                     <option value="7">Closed</option>
                                 </select><br>`;
-    outputDiv.innerHTML += `<label>Event Cost: <input type="number" step="0.01" id="eCost" value="${inputJson.eventCost}"></label><br>`;
-    outputDiv.innerHTML += `<label>Request Amount: <input type="number" step="0.01" id="rAm" value="${inputJson.reqAmount}"></label><br>`;
-    outputDiv.innerHTML += `<label>Approved Amount: <input type="number" step="0.01" id="aAm" value="${inputJson.approvedAmount}"></label><br>`;
-    outputDiv.innerHTML += `<label>Amount Exceeded: <input type="number" step="0.01" id="aEx" value="${inputJson.amountExceeded}"></label><br>`;
+    outputDiv.innerHTML += `<label>Event Cost: <input type="number" step="0.01" min="0" id="eCost" value="${inputJson.eventCost}"></label><br>`;
+    outputDiv.innerHTML += `<label>Request Amount: <input type="number" step="0.01" min="0" id="rAm" value="${inputJson.reqAmount}"></label><br>`;
+    outputDiv.innerHTML += `<label>Approved Amount: <input type="number" step="0.01" min="0" id="aAm" value="${inputJson.approvedAmount}"></label><br>`;
+    outputDiv.innerHTML += `<label>Amount Exceeded: <input type="number" step="0.01" min="0" id="aEx" value="${inputJson.amountExceeded}"></label><br>`;
     //strings start here
     outputDiv.innerHTML += `<label>Description: <textarea id="description" value="${inputJson.description}"></textarea></label><br>`;
     outputDiv.innerHTML += `<label>Location: <input type="text" id="location" value="${inputJson.location}"></label><br>`;
@@ -248,7 +307,7 @@ function populateRequestForm(inputJson, outputDiv)
     outputDiv.innerHTML += `<label>Open Date: <input type="datetime-local" id="oDate" value="${inputJson.openDate}"></label><br>`;
     outputDiv.innerHTML += `<label>Close Date: <input type="datetime-local" id="cDate" value="${inputJson.closeDate}"></label><br>`;
     outputDiv.innerHTML += `<input type="submit" onclick="submitRequestForm()"><input type="reset">`;
-    outputDiv.innerHTML += `<button onclick="saveRequestForm()" id="svBttn">Save</button>`;
+    outputDiv.innerHTML += `<button onclick="saveRequestForm()" id="svBttn" type="button">Save</button>`;
 
     return outputDiv;
 }
@@ -308,36 +367,85 @@ async function getRequestsManager()
     }
 }
 
+async function getRequestsAll()
+{
+    let res = await fetch(`${baseURL}/users/0/requests`, {method: `GET`, 
+        header: {"Content-Type": "application/json"}, body: null});
+        let resJSON = await res.json()
+        .then((resp) =>
+        {
+            console.log(resp);
+            document.getElementById('aReqList').innerHTML='';
+            for (let i = 0;i<resp.length;i++)
+            {
+                let newDiv = requestIntoDiv(resp[i], document.createElement('div'));
+                document.getElementById('aReqList').appendChild(newDiv);
+            }
+        })
+        .catch((error) => {console.log(error)});
+}
+
 async function submitRequestForm()
 {
     saveRequestForm();
     if (sessionStorage.getItem('singleRequest') != null && sessionStorage.getItem("uID")>0) //need some way to differentiate user vs manager
     {
-        console.log("g1");
         let reqToSend = JSON.parse(sessionStorage.getItem('singleRequest'));
-        if (reqToSend.openDate==null) 
+        console.log("a1");
+        if (reqToSend.openDate==null || reqToSend.openDate=="") //new form, open date can be set to read-only with more dev time
         {
+            console.log("a2");
             reqToSend.openDate = new Date();
-            console.log("g2");
-            console.log(reqToSend.requestID);
-            console.log(sessionStorage.getItem("uID"));
+            let localUID = sessionStorage.getItem("uID");
             let res = await fetch(`${baseURL}/users/${sessionStorage.getItem("uID")}/requests/1`, {method: `POST`,  
                 header: {"Content-Type": "application/json"}, body: JSON.stringify(reqToSend)});
-            console.log("g2.5");
             let resJSON = await res.json()
             .then((resp) => 
             {
                 console.log(resp); //re-load submitted request into form for user confirmation
-                sessionStorage.setItem('singleRequest',resp);
-                console.log("g3");
+                sessionStorage.setItem('singleRequest',JSON.stringify(resp));
+                console.log(sessionStorage.getItem('singleRequest'));
                 triggerPopulate();
             })
-            .catch((error) => {console.log(error); console.log("g4");});
+            .catch((error) => {console.log(error);});
 
         }
-        //if oDate == null then we know it's a fresh request--therefore, it's POST
-        //else if storedUID == reqUID then we know it's the user
-        //else if storedUID == reqFID then we know it's the manager
+        //edit-as-user. Backend doesn't see any difference between this and edit-as-manager yet
+        else if (reqToSend.userID == sessionStorage.getItem('uID'))
+        {
+            console.log("a3");
+            let res = await fetch(`${baseURL}/users/${sessionStorage.getItem("uID")}/requests/${reqToSend.requestID}`, {method: `PUT`,  
+                header: {"Content-Type": "application/json"}, body: JSON.stringify(reqToSend)});
+            console.log("a3.0");
+            let resJSON = await res.json()
+            .then((resp) => 
+            {
+                console.log("a3.1");
+                console.log(resp); //re-load submitted request into form for user confirmation
+                console.log("a3.2");
+                sessionStorage.setItem('singleRequest',JSON.stringify(resp));
+                console.log("a3.3");
+                console.log(sessionStorage.getItem('singleRequest'));
+                triggerPopulate();
+            })
+            .catch((error) => {console.log(error);});
+        }
+        //edit-as-manager. A manager editing their own request should edit as user
+        else if (reqToSend.financeID == sessionStorage.getItem('uID'))
+        {
+            console.log("a4");
+            let res = await fetch(`${baseURL}/managers/${sessionStorage.getItem("uID")}/requests/${reqToSend.requestID}`, {method: `PUT`,  
+                header: {"Content-Type": "application/json"}, body: JSON.stringify(reqToSend)});
+            let resJSON = await res.json()
+            .then((resp) => 
+            {
+                console.log(resp); //re-load submitted request into form for user confirmation
+                sessionStorage.setItem('singleRequest',JSON.stringify(resp));
+                console.log(sessionStorage.getItem('singleRequest'));
+                triggerPopulate();
+            })
+            .catch((error) => {console.log(error);});
+        }
     }
 }
 
